@@ -131,7 +131,7 @@ class Bot(Thread,Utility,Bot_Element):
 		async for data in gateway.connect(shards = self.shards):
 			if data["op"] == 0:
 				if data["t"] in ("VOICE_SERVER_UPDATE", "VOICE_STATE_UPDATE"):
-					print(data)
+					pass
 				if data["t"] in Events:
 					# "t" is the event name, i.e 'MESSAGE_CREATE', 'MESSAGE_REACTION_ADD', ...
 					event = Events[data["t"]]
