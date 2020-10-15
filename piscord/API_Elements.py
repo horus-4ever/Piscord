@@ -1,6 +1,7 @@
 import aiohttp
 import json
 from .Permission import Perm
+from .API_Elements2 import Channel
 
 class Cache:
 	def __init__(self, func):
@@ -19,7 +20,8 @@ class API_Element:
 	def to_json(self):
 		output = {}
 		for x,y in self.__dict__.items():
-			if x.endswith("__bot"):continue
+			if x.endswith("__bot"):
+				continue
 			if y != None:
 				if type(y) == list:
 					e=[]
@@ -509,22 +511,22 @@ class Channel:
 		Return :class:`Message`
 		"""
 
-		if files:
+		if files is not None:
 			form = aiohttp.FormData()
 			form.add_field('payload_json', json.dumps({"content":content,**kwargs}))
-			for i in range(len(files)):
-				file = files[i]
+			for i, file in enumerate(files):
 				if type(file) == str:
-					with open(file,"rb") as f:
-						c = f.read()
+					filename = file
+					with open(filename,"rb") as f:
+						file_content = f.read()
 				elif type(file) == list:
-					c = file[0]
-					file = file[1]
+					file_content, filename = file
 				else:
 					raise TypeError("Files should be a list or a string")
-				form.add_field(f"file {i}", c, filename=file)
+				form.add_field(f"file {i}", file_content, filename=filename)
 			return Message(self.__bot.api(f"/channels/{self.id}/messages", "POST", data=form),self.__bot)
-		return Message(self.__bot.api(f"/channels/{self.id}/messages", "POST", json={"content":content,**kwargs}),self.__bot)
+		else:
+			return Message(self.__bot.api(f"/channels/{self.id}/messages", "POST", json={"content":content,**kwargs}),self.__bot)
 
 	def get_messages(self,limit=50,before=None,after=None):
 
